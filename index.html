@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>S1 Points — Submit</title>
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --primary:#22c55e; --ring:rgba(34,197,94,.35); --error:#ef4444; }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+      background: radial-gradient(1200px 800px at 20% 10%, #111827, #0b1224), var(--bg); color:var(--text);
+      display:grid;place-items:center;padding:24px}
+    .card{width:100%;max-width:640px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:28px;box-shadow:0 20px 40px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+    label{display:block;margin:14px 0 8px;font-weight:600}
+    select, textarea{
+      width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);
+      background:rgba(17,24,39,.75);color:var(--text);outline:none;transition:border-color .14s, box-shadow .14s
+    }
+    select:focus, textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--ring)}
+    .btn{margin-top:18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,var(--primary),#16a34a);color:#fff;font-weight:700;cursor:pointer}
+    .muted{color:var(--muted)} .notice{margin-top:12px} .error{color:var(--error)}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>S1 Points</h1>
+    <p class="muted">Select your unit and share your points.</p>
+
+    <!-- Simple HTML POST directly to your Apps Script -->
+    <form action="https://script.google.com/macros/s/AKfycbyyUeT_LtM6VC-T8sMYouUmNL5DPS0IIr7nInzy8hvXJC230O0fK8YI-Mtu9X8KuKCXaQ/exec" method="POST" novalidate>
+      <label for="unit">Select your unit</label>
+      <select id="unit" name="unit" required>
+        <option value="">-- Please choose an option --</option>
+        <option>beavers</option>
+        <option>cubs</option>
+        <option>girlscouts</option>
+        <option>boyscouts</option>
+        <option>pioneers</option>
+        <option>rovers</option>
+      </select>
+
+      <label for="points">Your Points</label>
+      <textarea id="points" name="points" rows="7" placeholder="Write your points…" required minlength="20" maxlength="1000"></textarea>
+      <div class="muted"><span id="count">0</span>/1000</div>
+
+      <!-- Optional secret (set SHARED_SECRET in the Apps Script if you enable this) -->
+      <!-- <input type="hidden" name="token" value="YOUR_SHARED_SECRET"> -->
+
+      <!-- Absolute redirect fixes the earlier 'thanks' issue -->
+      <input type="hidden" name="_redirect" value="https://ibrahimantarrr.github.io/points/thanks.html" />
+
+      <button class="btn" type="submit">Submit</button>
+      <div id="msg" class="notice" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <script>
+    const points = document.getElementById('points');
+    const count = document.getElementById('count');
+    points.addEventListener('input', () => count.textContent = points.value.length);
+  </script>
+</body>
+</html>
