@@ -29,37 +29,64 @@
     <p class="muted">Select your unit and share your points.</p>
 
     <!-- Simple HTML POST directly to your Apps Script -->
-    <form action="https://script.google.com/macros/s/AKfycbxs4xv6K-D9lv6lA559zk5zdgTB0LNTJH6c0UOzlY96ZxHABuRUt1Y8I5GNdS6D4Gw/exec" method="POST">
-      <label for="unit">Select your unit</label>
-      <select id="unit" name="unit" required>
-        <option value="">-- Please choose an option --</option>
-        <option>beavers</option>
-        <option>cubs</option>
-        <option>girlscouts</option>
-        <option>boyscouts</option>
-        <option>pioneers</option>
-        <option>rovers</option>
-      </select>
+    <form id="scouts-form" novalidate>
+  <label for="unit">Select your unit</label>
+  <select id="unit" name="unit" required>
+    <option value="">-- Please choose an option --</option>
+    <option>beavers</option>
+    <option>cubs</option>
+    <option>girlscouts</option>
+    <option>boyscouts</option>
+    <option>pioneers</option>
+    <option>rovers</option>
+  </select>
 
-      <label for="points">Your Points</label>
-      <textarea id="points" name="points" rows="7" placeholder="Write your points…" required minlength="0" maxlength="1000"></textarea>
-      <div class="muted"><span id="count">0</span>/1000</div>
+  <label for="points">Your Points</label>
+  <textarea id="points" name="points" rows="7" placeholder="Write your points…" required minlength="20" maxlength="1000"></textarea>
+  <div class="muted"><span id="count">0</span>/1000</div>
 
-      <!-- Optional secret (set SHARED_SECRET in the Apps Script if you enable this) -->
-      <!-- <input type="hidden" name="token" value="YOUR_SHARED_SECRET"> -->
+  <button id="submitBtn" class="btn" type="submit">Submit</button>
+  <div id="msg" class="notice" aria-live="polite"></div>
+</form>
 
-      <!-- Absolute redirect fixes the earlier 'thanks' issue -->
-      <input type="hidden" name="_redirect" value="https://lsasaida1.github.io/Majles-Points/thanks.html" />
+<script>
+  const ENDPOINT = "https://script.google.com/macros/s/AKfycbyyUeT_LtM6VC-T8sMYouUmNL5DPS0IIr7nInzy8hvXJC230O0fK8YI-Mtu9X8KuKCXaQ/exec";
+  const THANKS = "https://ibrahimantarrr.github.io/points/thanks.html";
 
-      <button class="btn" type="submit">Submit</button>
-      <div id="msg" class="notice" aria-live="polite"></div>
-    </form>
-  </main>
+  const form = document.getElementById('scouts-form');
+  const points = document.getElementById('points');
+  const count = document.getElementById('count');
+  const msg = document.getElementById('msg');
+  const submitBtn = document.getElementById('submitBtn');
 
-  <script>
-    const points = document.getElementById('points');
-    const count = document.getElementById('count');
-    points.addEventListener('input', () => count.textContent = points.value.length);
-  </script>
+  points.addEventListener('input', () => count.textContent = points.value.length);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.textContent = "";
+    if (!form.checkValidity()) {
+      msg.textContent = "Please complete all required fields.";
+      msg.className = "notice error";
+      return;
+    }
+    // disable button to prevent double-clicks
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending…";
+
+    // add a nonce so the server can ignore duplicates
+    const nonce = Date.now() + "-" + Math.random().toString(36).slice(2);
+    const fd = new FormData(form);
+    fd.append("nonce", nonce);
+
+    try {
+      await fetch(ENDPOINT, { method: "POST", mode: "no-cors", body: fd });
+    } catch (_) {
+      // ignore network details; we still redirect to thanks
+    } finally {
+      // replace() avoids creating a history entry (no back-to-resubmit)
+      window.location.replace(THANKS);
+    }
+  });
+</script>
 </body>
 </html>
